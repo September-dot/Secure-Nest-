@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureNest | Smart Home AI Security Guardian</title>
+  <meta name="description" content="SecureNest: Automatic Smart Home Protection. Easy, private, zero cloud fees, and 100% automatic threat isolation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-dark">
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Interactive Tutorial / Step-by-Step Onboarding Modal -->
+  <div class="tutorial-overlay" id="tutorial-overlay">
+    <div class="tutorial-card">
+      <div class="tutorial-progress-bar">
+        <div class="tutorial-progress-fill" id="tutorial-progress-fill"></div>
+      </div>
+      <div class="tutorial-header">
+        <span class="tutorial-step-tag" id="tutorial-step-tag">STEP 1 OF 4</span>
+        <button class="tutorial-close-btn" id="btn-skip-tutorial" title="Skip Tutorial">✕</button>
+      </div>
+      <div class="tutorial-content" id="tutorial-body">
+        <!-- Injected dynamically by JavaScript -->
+      </div>
+      <div class="tutorial-footer">
+        <button class="btn btn-outline" id="btn-tutorial-prev" style="visibility: hidden;">Back</button>
+        <div class="tutorial-dots" id="tutorial-dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+        <button class="btn btn-primary" id="btn-tutorial-next">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Global Navigation -->
+  <header class="global-header">
+    <div class="header-brand">
+      <div class="brand-logo">
+        <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4" class="shield-check"/>
+        </svg>
+        <div class="pulse-ring"></div>
+      </div>
+      <div class="brand-text">
+        <div class="brand-title-wrap">
+          <h1 class="brand-title">SECURENEST</h1>
+          <span class="brand-badge">HOME GUARDIAN</span>
+        </div>
+        <p class="brand-subtitle">Private Home Shield · Sarna Residence Hub</p>
+      </div>
+    </div>
+
+    <!-- Mode Switcher (The Visual Faces) -->
+    <nav class="mode-nav" aria-label="Prototype Views">
+      <button class="mode-btn active" id="btn-face-mobile" data-face="mobile">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        <span>1. Homeowner App</span>
+      </button>
+      <button class="mode-btn" id="btn-face-soc" data-face="soc">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <span>2. Visual Home Map</span>
+      </button>
+      <button class="mode-btn" id="btn-face-terminal" data-face="terminal">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span>3. Test Protection (Demo)</span>
+      </button>
+      <button class="mode-btn highlight" id="btn-face-split" data-face="split">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+        <span>4. Side-by-Side View</span>
+      </button>
+    </nav>
+
+    <!-- Global Telemetry & Quick Action Controls -->
+    <div class="header-actions">
+      <button class="btn btn-guide" id="btn-open-tutorial" title="Open Interactive Tutorial">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>How It Works Guide</span>
+      </button>
+      <div class="telemetry-pill" id="global-status-pill">
+        <span class="status-dot green"></span>
+        <span class="status-label" id="global-status-text">ALL DEVICES PROTECTED</span>
+      </div>
+      <button class="icon-btn" id="btn-sound-toggle" title="Toggle Sound Feedback" aria-label="Toggle Sound">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      </button>
+      <button class="btn btn-outline" id="btn-global-reset" title="Reset to Initial Safe State">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        <span>Reset Shield</span>
+      </button>
+      <button class="btn btn-primary" id="btn-play-demo" title="Auto-run a full guided demo for judges">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span>Play Full Demo</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Guided Demo Narration Banner (hidden unless a guided demo is running) -->
+  <div class="guided-demo-banner hidden" id="guided-demo-banner">
+    <span class="guided-demo-dot"></span>
+    <span class="guided-demo-text" id="guided-demo-text">Starting guided demo…</span>
+    <button class="btn btn-outline btn-sm" id="btn-stop-demo">Stop Demo</button>
+  </div>
+
+  <!-- Main Viewport Container -->
+  <main class="main-viewport" id="main-viewport">
+
+    <!-- ================================================================= -->
+    <!-- FACE 1: HOMEOWNER MOBILE COMPANION APP                            -->
+    <!-- ================================================================= -->
+    <section class="face-view active" id="view-mobile">
+      <div class="mobile-device-wrapper" id="mobile-home-wrapper">
+        
+        <!-- Live Primary Mobile Frame Component (Mounted in Face 1 & Face 4) -->
+        <div class="mobile-frame" id="main-mobile-frame">
+          <!-- Dynamic Island Notch -->
+          <div class="mobile-notch">
+            <div class="camera-lens"></div>
+            <div class="speaker-grill"></div>
+          </div>
+          
+          <!-- Mobile Status Bar -->
+          <div class="mobile-status-bar">
+            <span class="mobile-time" id="mobile-time-display">18:55</span>
+            <div class="mobile-icons">
+              <svg class="status-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.17 19.57 10.53 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+              <svg class="status-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M2 17h20v2H2zm1.15-4.05L4 11.92c3.12-2.12 7.03-3.23 11-3.23 3.97 0 7.88 1.11 11 3.23l.85 1.03-1.42 1.42C22.61 12.63 19.39 11.7 15 11.7c-4.39 0-7.61.93-10.43 2.67L3.15 12.95z"/></svg>
+              <svg class="status-icon" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="7" width="18" height="10" rx="2" ry="2"/><path d="M22 11v2"/></svg>
+            </div>
+          </div>
+
+          <!-- Mobile App Scrollable Content Window -->
+          <div class="mobile-content-container">
+
+            <!-- TAB 1: SHIELD / HOME DASHBOARD -->
+            <div class="tab-page active" id="tab-shield">
+              <!-- App Header -->
+              <div class="app-header">
+                <div>
+                  <span class="app-greeting">Home Wi-Fi Protection</span>
+                  <h2 class="app-location">Sarna Residence</h2>
+                </div>
+                <button class="app-avatar-btn" id="btn-open-profile" title="View Profile & Home Gateway">
+                  <span class="avatar-text">MS</span>
+                  <span class="avatar-dot"></span>
+                </button>
+              </div>
+
+              <!-- Main Hero Protection Shield -->
+              <div class="shield-card" id="mobile-shield-card">
+                <div class="shield-glow" id="shield-glow-effect"></div>
+                <div class="shield-graphic">
+                  <div class="shield-ring-outer"></div>
+                  <div class="shield-ring-inner"></div>
+                  <div class="shield-center-icon">
+                    <svg id="mobile-shield-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      <path d="M9 12l2 2 4-4" class="shield-inner-mark" id="mobile-shield-mark"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="shield-meta">
+                  <h3 class="shield-status-title" id="mobile-shield-title">All Systems Safe</h3>
+                  <p class="shield-status-desc" id="mobile-shield-desc">24 smart devices protected · Smart Guardian AI watching your network</p>
+                </div>
+                <div class="shield-stats-row">
+                  <div class="shield-stat-col">
+                    <span class="stat-num" id="stat-trusted-count">24</span>
+                    <span class="stat-lbl">Safe Devices</span>
+                  </div>
+                  <div class="stat-divider"></div>
+                  <div class="shield-stat-col">
+                    <span class="stat-num" id="stat-quarantine-count">0</span>
+                    <span class="stat-lbl">Blocked / Isolated</span>
+                  </div>
+                  <div class="stat-divider"></div>
+                  <div class="shield-stat-col">
+                    <span class="stat-num green">Instant</span>
+                    <span class="stat-lbl">Response Time</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Emergency Threat Alert Box (Appears when suspicious activity is caught) -->
+              <div class="threat-alert-card hidden" id="mobile-threat-card">
+                <div class="threat-card-header">
+                  <div class="threat-tag">
+                    <span class="threat-ping"></span>
+                    <span>🚨 SUSPICIOUS DEVICE ISOLATED</span>
+                  </div>
+                  <span class="threat-time">Just now</span>
+                </div>
+                <div class="threat-body">
+                  <div class="threat-device-row">
+                    <div class="device-icon-box danger">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    </div>
+                    <div>
+                      <h4 class="threat-device-name" id="threat-device-name">Living Room Smart Camera</h4>
+                      <p class="threat-device-ip" id="threat-device-ip">Location: Living Room · XiaoYi</p>
+                    </div>
+                  </div>
+                  
+                  <div class="plain-english-box">
+                    <div class="plain-english-title">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                      <span>What Happened in Simple Terms:</span>
+                    </div>
+                    <p class="plain-english-text" id="threat-plain-text">
+                      This camera suddenly began scanning your other home gadgets and attempted to contact an unauthorized server overseas. SecureNest stopped it and locked it in the <strong>Quarantine Isolation Vault</strong> in <strong>under 1 second</strong>.
+                    </p>
+                  </div>
+
+                  <div class="threat-prevented-list">
+                    <div class="prevented-item">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span>Your personal laptops, phones, and bank details remain 100% safe.</span>
+                    </div>
+                    <div class="prevented-item">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span>The rogue device cannot spread or send private home video.</span>
+                    </div>
+                  </div>
+
+                  <div class="threat-actions">
+                    <button class="btn btn-danger-solid full-width" id="btn-keep-quarantined">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                      <span>Keep Device Blocked (Recommended)</span>
+                    </button>
+                    <button class="btn btn-subtle full-width" id="btn-override-threat">
+                      <span>I Trust This Device (Unblock with PIN)</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Protection Controls -->
+              <div class="app-section-header">
+                <h4 class="section-title">One-Tap Home Protection</h4>
+                <span class="section-sub">Always Active</span>
+              </div>
+              <div class="quick-controls-grid">
+                <div class="control-card active" id="card-scan-network">
+                  <div class="control-icon-circle green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  </div>
+                  <div class="control-info">
+                    <span class="control-name">Smart Guardian AI</span>
+                    <span class="control-status">Armed (Auto-Protect)</span>
+                  </div>
+                </div>
+                <div class="control-card" id="card-guest-protect">
+                  <div class="control-icon-circle cyan">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  </div>
+                  <div class="control-info">
+                    <span class="control-name">Guest Isolation</span>
+                    <span class="control-status" id="guest-status-text">Active (Sandboxed)</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Device Overview Preview -->
+              <div class="app-section-header">
+                <h4 class="section-title">Connected Devices</h4>
+                <button class="link-btn" id="btn-view-all-devices">View All (24) &rarr;</button>
+              </div>
+
+              <div class="mobile-device-list" id="mobile-device-list-preview">
+                <!-- Preview items populated dynamically -->
+              </div>
+            </div>
+
+            <!-- TAB 2: ALL DEVICES MANAGER -->
+            <div class="tab-page" id="tab-devices">
+              <div class="tab-page-header">
+                <h3 class="tab-title">Device Manager</h3>
+                <span class="device-count-tag" id="tab-device-count-badge">24 Online</span>
+              </div>
+
+              <!-- Search Bar -->
+              <div class="device-search-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="device-search-input" placeholder="Search by name, room, or brand..." class="search-input">
+              </div>
+
+              <!-- Filter Pills -->
+              <div class="category-scroll">
+                <button class="cat-pill active" data-cat="ALL">All (24)</button>
+                <button class="cat-pill" data-cat="CAMERA">Cameras (4)</button>
+                <button class="cat-pill" data-cat="SECURITY">Locks & Alarms (3)</button>
+                <button class="cat-pill" data-cat="CLIMATE">Thermostats & Air (5)</button>
+                <button class="cat-pill" data-cat="MEDIA">TVs & Audio (6)</button>
+                <button class="cat-pill" data-cat="PRIVATE">Computers & Phones (6)</button>
+              </div>
+
+              <!-- Full Device List -->
+              <div class="mobile-device-list" id="mobile-device-list-full">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+            <!-- TAB 3: ACTIVITY TIMELINE -->
+            <div class="tab-page" id="tab-activity">
+              <div class="tab-page-header">
+                <h3 class="tab-title">Protection Activity</h3>
+                <span class="badge-pill green">Real-Time</span>
+              </div>
+              <p class="tab-desc">A simple history of every security check and action taken by your home guardian.</p>
+
+              <div class="activity-timeline" id="activity-timeline-list">
+                <!-- Dynamic activity items -->
+              </div>
+            </div>
+
+            <!-- TAB 4: SETTINGS & PREFERENCES -->
+            <div class="tab-page" id="tab-settings">
+              <div class="tab-page-header">
+                <h3 class="tab-title">Guardian Settings</h3>
+                <span class="badge-pill cyan">Customizable</span>
+              </div>
+
+              <div class="settings-group">
+                <h4 class="settings-group-title">Automatic Defense</h4>
+                
+                <div class="setting-item">
+                  <div class="setting-text">
+                    <span class="setting-label">Automatic Threat Lockout</span>
+                    <span class="setting-desc">Instantly isolate suspicious devices without waiting for you to click.</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-auto-lockout" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-text">
+                    <span class="setting-label">Instant Phone Alerts</span>
+                    <span class="setting-desc">Receive a push alert the second an unknown device or threat is found.</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-push-alerts" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-text">
+                    <span class="setting-label">100% On-Device Privacy</span>
+                    <span class="setting-desc">No video clips, private passwords, or camera feeds ever leave your house.</span>
+                  </div>
+                  <span class="badge-pill green">Locked ON</span>
+                </div>
+              </div>
+
+              <div class="settings-group">
+                <h4 class="settings-group-title">Security PIN</h4>
+                <div class="setting-item" id="btn-change-pin">
+                  <div class="setting-text">
+                    <span class="setting-label">Master Security PIN</span>
+                    <span class="setting-desc">Used to unblock devices or change critical security rules. PIN: •••• (hidden for your security)</span>
+                  </div>
+                  <button class="btn btn-outline btn-sm">Change PIN</button>
+                </div>
+              </div>
+
+              <div class="settings-group">
+                <h4 class="settings-group-title">System & Help</h4>
+                <div class="setting-item" id="btn-restart-tutorial-settings">
+                  <div class="setting-text">
+                    <span class="setting-label">Replay App Tutorial</span>
+                    <span class="setting-desc">Walk through how SecureNest protects your home step-by-step.</span>
+                  </div>
+                  <button class="btn btn-primary btn-sm">Start Guide</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Mobile App Bottom Navigation Bar -->
+          <div class="mobile-nav-bar">
+            <button class="app-nav-item active" data-tab="tab-shield">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>Shield</span>
+            </button>
+            <button class="app-nav-item" data-tab="tab-devices">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+              <span>Devices</span>
+            </button>
+            <button class="app-nav-item" data-tab="tab-activity">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <span>Activity</span>
+            </button>
+            <button class="app-nav-item" data-tab="tab-settings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Settings</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- FACE 2: VISUAL HOME NETWORK MAP                                   -->
+    <!-- ================================================================= -->
+    <section class="face-view" id="view-soc">
+      <div class="soc-layout">
+        <!-- Left: Interactive Visual Home Network Map -->
+        <div class="soc-main-panel">
+          <div class="panel-card topology-card">
+            <div class="panel-header">
+              <div class="panel-title-wrap">
+                <svg class="panel-icon cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                <h3 class="panel-title">Visual Home Network Map</h3>
+                <span class="live-tag">LIVE INTERACTIVE</span>
+              </div>
+              <div class="topology-legend">
+                <span class="legend-item"><span class="legend-dot vlan-private"></span> Personal Devices (Laptops/Phones)</span>
+                <span class="legend-item"><span class="legend-dot vlan-iot"></span> Smart Gadgets (Cams/Locks)</span>
+                <span class="legend-item"><span class="legend-dot vlan-quarantine"></span> Quarantine Isolation Vault</span>
+              </div>
+            </div>
+
+            <!-- Interactive SVG Topology Visualizer -->
+            <div class="topology-canvas-wrap" id="topology-canvas-wrap">
+              <svg class="topology-svg" id="topology-svg" viewBox="0 0 900 520">
+                <defs>
+                  <filter id="glow-green" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="6" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                  <filter id="glow-red" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="8" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                  <linearGradient id="grad-quarantine" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(239, 68, 68, 0.25)"/>
+                    <stop offset="100%" stop-color="rgba(185, 28, 28, 0.05)"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Zone 1: Personal Devices -->
+                <rect x="30" y="30" width="260" height="460" rx="16" class="zone-bg zone-private"/>
+                <text x="50" y="65" class="zone-label">Personal Devices Zone</text>
+                <text x="50" y="85" class="zone-sub">Your Laptops, Phones, & Private Storage</text>
+
+                <!-- Zone 2: Smart Home Gadgets -->
+                <rect x="310" y="30" width="310" height="460" rx="16" class="zone-bg zone-iot"/>
+                <text x="330" y="65" class="zone-label">Smart Home Gadgets Zone</text>
+                <text x="330" y="85" class="zone-sub">Cameras, Locks, Thermostats & Hubs</text>
+
+                <!-- Zone 3: Quarantine Vault -->
+                <rect x="640" y="30" width="230" height="460" rx="16" class="zone-bg zone-quarantine" id="quarantine-zone-box"/>
+                <text x="660" y="65" class="zone-label text-red">Quarantine Isolation Vault</text>
+                <text x="660" y="85" class="zone-sub">Blocked Suspicious Hardware (0 Access)</text>
+
+                <!-- Dynamic Connections Group -->
+                <g id="topology-edges"></g>
+
+                <!-- Dynamic Node Elements Group -->
+                <g id="topology-nodes"></g>
+
+                <!-- SecureNest Central Hub -->
+                <g id="gateway-hub" transform="translate(450, 260)">
+                  <circle r="44" class="hub-outer-circle" />
+                  <circle r="34" class="hub-inner-circle" />
+                  <text text-anchor="middle" y="-6" class="hub-title">SECURENEST</text>
+                  <text text-anchor="middle" y="10" class="hub-sub">SMART AI</text>
+                  <circle r="5" cx="0" cy="22" fill="#10B981" class="hub-live-dot"/>
+                </g>
+              </svg>
+            </div>
+
+            <!-- Plain-Language Protection Status Bar -->
+            <div class="network-map-footer">
+              <div class="footer-info-col">
+                <span class="footer-info-title">Smart Segmentation:</span>
+                <span class="footer-info-desc">Smart home gadgets can never touch or spy on your personal laptops and bank passwords.</span>
+              </div>
+              <div class="footer-info-col">
+                <span class="footer-info-title">Automatic Isolation:</span>
+                <span class="footer-info-desc">If any camera or bulb gets hacked, it is pulled into the Quarantine Vault instantly.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: AI Health & Protection Overview -->
+        <div class="soc-sidebar">
+          <!-- Smart Guardian AI Score Card -->
+          <div class="panel-card ml-card">
+            <div class="panel-header">
+              <div class="panel-title-wrap">
+                <svg class="panel-icon green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <h3 class="panel-title">Smart Guardian AI Health</h3>
+              </div>
+              <span class="badge-pill green" id="ml-engine-status">ARMED & WATCHING</span>
+            </div>
+
+            <div class="ml-score-display">
+              <div class="score-radial-wrap">
+                <svg class="score-svg" viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="50" class="score-track"/>
+                  <circle cx="60" cy="60" r="50" class="score-progress" id="ml-score-progress"/>
+                </svg>
+                <div class="score-center-val">
+                  <span class="score-number" id="ml-score-number">99%</span>
+                  <span class="score-label">SAFETY INDEX</span>
+                </div>
+              </div>
+              <div class="score-threshold-info">
+                <div class="threshold-row">
+                  <span class="th-lbl">Protection Status:</span>
+                  <span class="th-val green" id="ai-safety-status-text">Fully Protected</span>
+                </div>
+                <div class="threshold-row">
+                  <span class="th-lbl">Response Speed:</span>
+                  <span class="th-val cyan">Instant (&lt; 0.5 sec)</span>
+                </div>
+                <div class="threshold-row">
+                  <span class="th-lbl">Privacy Guarantee:</span>
+                  <span class="th-val green">100% Private (No Cloud)</span>
+                </div>
+                <div class="threshold-row">
+                  <span class="th-lbl">Active Isolation:</span>
+                  <span class="th-val" id="active-isolation-status-text">0 Devices Blocked</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Device Health Breakdown -->
+            <div class="device-health-breakdown">
+              <h5 class="radar-title">Protection Coverage</h5>
+              <div class="health-bars-list">
+                <div class="health-bar-item">
+                  <div class="hb-meta"><span>Smart Cameras (4)</span><span class="green">100% Safe</span></div>
+                  <div class="hb-track"><div class="hb-fill" style="width: 100%;"></div></div>
+                </div>
+                <div class="health-bar-item">
+                  <div class="hb-meta"><span>Smart Locks & Security (3)</span><span class="green">100% Safe</span></div>
+                  <div class="hb-track"><div class="hb-fill" style="width: 100%;"></div></div>
+                </div>
+                <div class="health-bar-item">
+                  <div class="hb-meta"><span>Personal Workstations (6)</span><span class="cyan">Isolated & Private</span></div>
+                  <div class="hb-track"><div class="hb-fill cyan" style="width: 100%;"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quarantine Vault Status Card -->
+          <div class="panel-card nftables-card">
+            <div class="panel-header">
+              <div class="panel-title-wrap">
+                <svg class="panel-icon orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <h3 class="panel-title">Quarantine Isolation Vault</h3>
+              </div>
+              <span class="badge-mono" id="quarantine-set-count">0 Blocked</span>
+            </div>
+
+            <div class="quarantine-summary-box">
+              <p class="quarantine-summary-text" id="quarantine-summary-text">
+                All 24 devices are behaving normally. If any device is infected, it is locked into this vault immediately to prevent it from reaching your personal files.
+              </p>
+              <div class="vault-status-indicator" id="vault-status-indicator">
+                <span class="status-dot green"></span>
+                <span>Vault Standby · No Infected Hardware</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- FACE 3: TEST PROTECTION & ATTACK SIMULATOR                       -->
+    <!-- ================================================================= -->
+    <section class="face-view" id="view-terminal">
+      <div class="attack-layout">
+        <!-- Attack Control Deck -->
+        <div class="panel-card attack-control-deck">
+          <div class="panel-header">
+            <div class="panel-title-wrap">
+              <svg class="panel-icon red" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <h3 class="panel-title">Safe Protection Test Deck</h3>
+            </div>
+            <span class="badge-pill red">TEST SCENARIOS</span>
+          </div>
+
+          <p class="attack-deck-desc">
+            Test how SecureNest defends your home in real time! Click any test scenario below to simulate an event and watch the automatic sub-second defense in action.
+          </p>
+
+          <!-- Live Detection Engine Status: shows the anomaly-scoring engine is actually computing, not just playing a script -->
+          <div class="engine-status-line" id="engine-status-line">
+            <span class="engine-status-dot"></span>
+            <span>Detection engine: baseline learned for <strong id="engine-baseline-count">24</strong> devices · last scored <strong id="engine-last-scored">just now</strong></span>
+          </div>
+
+          <div class="attack-cards-grid">
+            <!-- Scenario 1: Camera Hack -->
+            <div class="attack-action-card" id="attack-card-mirai">
+              <div class="attack-card-top">
+                <div class="attack-badge red">SIMULATE THREAT</div>
+                <span class="target-chip">Target: Living Room Smart Camera</span>
+              </div>
+              <h4 class="attack-title">1. Test Smart Camera Hack</h4>
+              <p class="attack-summary">
+                Simulates an attacker taking over your camera and trying to scan other devices in your house.
+              </p>
+              <button class="btn btn-danger-solid full-width" id="btn-trigger-mirai">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>Run Camera Hack Test</span>
+              </button>
+            </div>
+
+            <!-- Scenario 2: Secret Video Leak -->
+            <div class="attack-action-card" id="attack-card-exfil">
+              <div class="attack-card-top">
+                <div class="attack-badge orange">SIMULATE PRIVACY LEAK</div>
+                <span class="target-chip">Target: Baby Nursery Monitor</span>
+              </div>
+              <h4 class="attack-title">2. Test Secret Video Exfiltration</h4>
+              <p class="attack-summary">
+                Simulates a baby monitor secretly sending unauthorized live video feeds to an unknown foreign server.
+              </p>
+              <button class="btn btn-warning-solid full-width" id="btn-trigger-exfil">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Run Video Leak Test</span>
+              </button>
+            </div>
+
+            <!-- Scenario 3: Plug in New Device -->
+            <div class="attack-action-card" id="attack-card-discovery">
+              <div class="attack-card-top">
+                <div class="attack-badge cyan">DEVICE DISCOVERY</div>
+                <span class="target-chip">Trigger: New Smart Plug Connects</span>
+              </div>
+              <h4 class="attack-title">3. Plug In a New Smart Plug</h4>
+              <p class="attack-summary">
+                Simulates buying a new smart gadget. Watch SecureNest automatically recognize and safely sandbox it.
+              </p>
+              <button class="btn btn-cyan-solid full-width" id="btn-trigger-discovery">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                <span>Plug In New Gadget</span>
+              </button>
+            </div>
+
+            <!-- Scenario 4: Software Update (No False Alarm) -->
+            <div class="attack-action-card" id="attack-card-ota">
+              <div class="attack-card-top">
+                <div class="attack-badge green">SAFE UPDATE TEST</div>
+                <span class="target-chip">Target: Nest Thermostat</span>
+              </div>
+              <h4 class="attack-title">4. Test Normal Software Update</h4>
+              <p class="attack-summary">
+                Simulates a heavy 40MB official software download. Verifies that SecureNest does not cause false alarms on normal smart home usage.
+              </p>
+              <button class="btn btn-outline full-width" id="btn-trigger-ota">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Test Normal Update</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Plain-English Live Protection Log -->
+        <div class="panel-card gateway-terminal-panel">
+          <div class="panel-header">
+            <div class="panel-title-wrap">
+              <svg class="panel-icon green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+              <h3 class="panel-title">Live Protection Activity Log</h3>
+            </div>
+            <div class="terminal-ctrls">
+              <span class="live-blink-dot"></span>
+              <button class="term-clear-btn" id="btn-clear-term">Clear Log</button>
+            </div>
+          </div>
+
+          <div class="term-window" id="term-log-stream">
+            <!-- Dynamically populated streaming plain-English logs -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- FACE 4: SIDE-BY-SIDE VIEW (FOR JUDGING)                           -->
+    <!-- ================================================================= -->
+    <section class="face-view" id="view-split">
+      <div class="split-layout">
+        <div class="split-left-pane">
+          <div class="split-pane-header">
+            <h4 class="pane-header-title">📱 Homeowner Mobile App (Live Interactive)</h4>
+            <span class="badge-pill green">100% Fully Functional</span>
+          </div>
+          <div class="split-mobile-frame" id="split-mobile-container">
+            <!-- Live mobile frame mounted here dynamically -->
+          </div>
+        </div>
+
+        <div class="split-right-pane">
+          <div class="split-pane-header">
+            <h4 class="pane-header-title">⚡ Instant Reaction & Safe Test Controls</h4>
+            <span class="badge-pill cyan">Live Feedback</span>
+          </div>
+          
+          <div class="panel-card" style="padding: 16px; margin-bottom: 16px;">
+            <div class="panel-header" style="padding: 0 0 12px 0;">
+              <h4 style="font-size: 0.9rem; font-weight: 700; color: #fff;">1-Click Attack Triggers</h4>
+            </div>
+            <p style="font-size: 0.76rem; color: #94a3b8; margin-bottom: 12px;">
+              Click any button below and watch the phone on the left react instantly:
+            </p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <button class="btn btn-danger-solid" id="split-btn-mirai">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>Test Camera Hack</span>
+              </button>
+              <button class="btn btn-warning-solid" id="split-btn-exfil">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Test Video Leak</span>
+              </button>
+              <button class="btn btn-cyan-solid" id="split-btn-discovery">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                <span>Plug In New Gadget</span>
+              </button>
+              <button class="btn btn-outline" id="split-btn-reset">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                <span>Reset Shield</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="panel-card" style="padding: 16px;">
+            <div class="panel-header" style="padding: 0 0 12px 0;">
+              <h4 style="font-size: 0.9rem; font-weight: 700; color: #fff;">Real-Time Protection Status</h4>
+            </div>
+            <div class="split-metrics-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;">
+              <div class="metric-box" style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                <div style="font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Home Status</div>
+                <div id="split-home-status-val" style="font-size: 0.85rem; font-weight: 700; color: #10b981; margin-top: 2px;">100% Safe</div>
+              </div>
+              <div class="metric-box" style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                <div style="font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Quarantine Vault</div>
+                <div id="split-vault-status-val" style="font-size: 0.85rem; font-weight: 700; color: #f8fafc; margin-top: 2px;">0 Blocked</div>
+              </div>
+              <div class="metric-box" style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                <div style="font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Reaction Time</div>
+                <div style="font-size: 0.85rem; font-weight: 700; color: #06b6d4; margin-top: 2px;">&lt; 0.5s Automatic</div>
+              </div>
+              <div class="metric-box" style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                <div style="font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Privacy Protection</div>
+                <div style="font-size: 0.85rem; font-weight: 700; color: #10b981; margin-top: 2px;">100% Local (0 KB Cloud)</div>
+              </div>
+            </div>
+
+            <!-- Mini Visual Map in Side-by-Side -->
+            <div style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+              <h5 style="font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin-bottom: 8px; text-transform: uppercase;">Live Network Zone Overview</h5>
+              <div style="display: flex; gap: 8px; font-size: 0.72rem;">
+                <span style="background: rgba(59,130,246,0.15); color: #3b82f6; padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(59,130,246,0.3);">● 6 Personal Devices</span>
+                <span style="background: rgba(16,185,129,0.15); color: #10b981; padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(16,185,129,0.3);">● 18 Smart Gadgets</span>
+                <span id="split-vault-pill" style="background: rgba(239,68,68,0.15); color: #ef4444; padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(239,68,68,0.3);">● 0 In Vault</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Re-Authorization Passkey PIN Modal -->
+  <div class="modal-overlay hidden" id="override-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-icon-wrap warning">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div>
+          <h3 class="modal-title">Unblock & Trust Device</h3>
+          <p class="modal-sub">Restore device back to your regular smart home network</p>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="modal-text">
+          You are unblocking <strong id="modal-override-device-name">Living Room Smart Camera</strong>. SecureNest will release it from the Quarantine Vault and restore normal Wi-Fi connectivity.
+        </p>
+        <div class="input-group">
+          <label for="override-passcode">Enter Master PIN</label>
+          <input type="password" id="override-passcode" class="text-input" placeholder="••••" maxlength="4" inputmode="numeric" autocomplete="off">
+          <span class="input-error hidden" id="override-passcode-error">Incorrect PIN. Please try again.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btn-cancel-modal">Cancel</button>
+        <button class="btn btn-primary" id="btn-confirm-override">Unblock Device</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Device Details & Control Modal -->
+  <div class="modal-overlay hidden" id="device-detail-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-icon-wrap cyan" id="detail-modal-icon-wrap">
+          <svg id="detail-modal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/></svg>
+        </div>
+        <div>
+          <h3 class="modal-title" id="detail-device-name">Device Name</h3>
+          <p class="modal-sub" id="detail-device-brand">Brand · Room</p>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="detail-label">Protection Status</span>
+            <span class="detail-val green" id="detail-device-status">Safe & Monitored</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Zone</span>
+            <span class="detail-val" id="detail-device-zone">Smart Home Gadgets</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Activity Level</span>
+            <span class="detail-val" id="detail-device-rate">Normal (12 KB/s)</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Privacy Shield</span>
+            <span class="detail-val green">Active</span>
+          </div>
+        </div>
+
+        <div class="detail-actions-list">
+          <div class="setting-item">
+            <div class="setting-text">
+              <span class="setting-label">Pause Internet Access</span>
+              <span class="setting-desc">Temporarily freeze internet connectivity for this device.</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="detail-toggle-pause">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-text">
+              <span class="setting-label">Move to Quarantine Vault</span>
+              <span class="setting-desc">Manually isolate this device if you suspect it is acting strange.</span>
+            </div>
+            <button class="btn btn-danger-solid btn-sm" id="detail-btn-isolate">Isolate Now</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline full-width" id="btn-close-device-detail">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Profile & Gateway Status Modal -->
+  <div class="modal-overlay hidden" id="profile-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="profile-avatar-lg">MS</div>
+        <div>
+          <h3 class="modal-title">Mayank Sarna</h3>
+          <p class="modal-sub">Home Administrator · Sarna Residence</p>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="profile-info-card">
+          <div class="profile-row">
+            <span class="p-lbl">Home Protection Hub</span>
+            <span class="p-val green">SecureNest Model S5 (Active)</span>
+          </div>
+          <div class="profile-row">
+            <span class="p-lbl">Wi-Fi Network</span>
+            <span class="p-val">Sarna_Home_Secure</span>
+          </div>
+          <div class="profile-row">
+            <span class="p-lbl">Cloud Dependency</span>
+            <span class="p-val green">0% (100% Private On-Device)</span>
+          </div>
+          <div class="profile-row">
+            <span class="p-lbl">Monthly Cloud Fees</span>
+            <span class="p-val">$0.00 (Lifetime Free)</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline full-width" id="btn-close-profile">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
